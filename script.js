@@ -44,7 +44,7 @@ $(document).ready(function () {
     });
 
     $(".input-cell").click(function(e) {
-        if (e.ctrlKey) {
+        if (e.metaKey) {
             let [rowId, colId] = getRowCol(this);
             if (rowId > 1) {
                 let topCellSelected = $(`#row-${rowId - 1}-col-${colId}`).hasClass("selected");

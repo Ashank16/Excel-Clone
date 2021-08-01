@@ -298,7 +298,9 @@ $(".icon-add").click(function() {
 
 function addSheetEvents() {
     $(".sheet-tab.selected").click(function() {
+        console.log(this);
         if(!$(this).hasClass("selected")) {
+            console.log(this);
             selectSheet(this);
         }
     });
@@ -374,4 +376,49 @@ function selectSheet(ele) {
     selectedSheet = $(ele).text();
     loadSheet();
 }
+
+
+let selectedCells = [];
+let cut = false;
+
+$(".icon-copy").click(function() {
+    $(".input-cell.selected").each(function() {
+        let [rowId, colId] = getRowCol(this);
+        selectedCells.push([rowId, colId]);
+    })
+});
+
+$(".icon-cut").click(function() {
+    $(".input-cell.selected").each(function() {
+        let [rowId, colId] = getRowCol(this);
+        selectedCells.push([rowId, colId]);
+    })
+    cut = true;
+});
+
+$(".icon-paste").click(function() {
+    emptySheet();
+    let [rowId, colId] = getRowCol($(".input-cell.selected")[0]);
+    let rowDistance = rowId - selectedCells[0][0];
+    let colDistance = colId - selectedCells[0][1];
+    for (let cell of selectedCells) {
+        let newRowId = cell[0] + rowDistance;
+        let newColId = cell[1] + colDistance;
+        if (!cellData[selectedSheet][newRowId]) {
+            cellData[selectedSheet][newRowId] = {};
+        }
+        cellData[selectedSheet][newRowId][newColId] = {...cellData[selectedSheet][cell[0]][cell[1]]};
+        if(cut) {
+            delete cellData[selectedSheet][cell[0]][cell[1]];
+            if (Object.keys(cellData[selectedSheet][cell[0]]).length == 0) {
+                delete cellData[selectedSheet][cell[0]];
+            }
+        }
+    }
+    if (cut) {
+        cut = false;
+        selectedCells = [];
+    }
+    loadSheet();
+});
 
